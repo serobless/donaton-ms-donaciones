@@ -7,9 +7,9 @@ cl\duoc\donaton\msdonaciones\service\DonacionService.class
 cl\duoc\donaton\msdonaciones\config\GlobalExceptionHandler.class
 cl\duoc\donaton\msdonaciones\model\Causa$CausaBuilder.class
 cl\duoc\donaton\msdonaciones\dto\TransparenciaResponse.class
+cl\duoc\donaton\msdonaciones\config\GatewayAuthFilter.class
 cl\duoc\donaton\msdonaciones\controller\CausaController.class
 cl\duoc\donaton\msdonaciones\model\Donacion.class
-cl\duoc\donaton\msdonaciones\config\CorsConfig$1.class
 cl\duoc\donaton\msdonaciones\dto\DonacionRequest.class
 cl\duoc\donaton\msdonaciones\model\TipoDonacion.class
 cl\duoc\donaton\msdonaciones\init\DataInitializer.class
@@ -17,6 +17,7 @@ cl\duoc\donaton\msdonaciones\controller\DonacionController.class
 cl\duoc\donaton\msdonaciones\dto\TransparenciaResponse$TransparenciaResponseBuilder.class
 cl\duoc\donaton\msdonaciones\dto\CausaRequest.class
 cl\duoc\donaton\msdonaciones\config\CorsConfig.class
+cl\duoc\donaton\msdonaciones\config\SecurityConfig.class
 cl\duoc\donaton\msdonaciones\dto\TopDonadorResponse.class
 cl\duoc\donaton\msdonaciones\factory\DonacionFactory.class
 cl\duoc\donaton\msdonaciones\config\OpenApiConfig.class

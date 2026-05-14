@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.PageRequest;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -28,7 +30,7 @@ public class DonacionService {
     }
 
     @Transactional
-    public Donacion crear(DonacionRequest req) {
+    public Donacion crear(DonacionRequest req, String donadorId) {
         Causa causa = causaService.obtenerPorId(req.getCausaId());
 
         Donacion donacion = DonacionFactory.crear(
@@ -37,6 +39,7 @@ public class DonacionService {
                 req.getDonanteAlias(),
                 causa
         );
+        donacion.setDonadorId(donadorId);
 
         Donacion guardada = donacionRepository.save(donacion);
 
@@ -57,11 +60,28 @@ public class DonacionService {
                 .toList();
     }
 
+    public List<Donacion> listarPorDonador(String donadorId) {
+        if (donadorId == null || donadorId.isBlank()) return List.of();
+        return donacionRepository.findByDonadorId(donadorId);
+    }
+
+    public List<Donacion> listarUltimas(int limit) {
+        return donacionRepository.findAllByOrderByFechaDesc(PageRequest.of(0, limit));
+    }
+
+    public BigDecimal totalRecaudado() {
+        return donacionRepository.sumTotalMontos();
+    }
+
+    public long conteo() {
+        return donacionRepository.count();
+    }
+
     public List<TransparenciaResponse> transparencia() {
         return donacionRepository.findAll().stream()
                 .map(d -> TransparenciaResponse.builder()
                         .id(d.getId())
-                        .donanteAlias(d.getDonanteAlias() != null ? d.getDonanteAlias() : "Anónimo")
+                        .donadorNombre(d.getDonanteAlias() != null ? d.getDonanteAlias() : "Anónimo")
                         .monto(d.getMonto())
                         .tipoDonacion(d.getTipoDonacion())
                         .fecha(d.getFecha())

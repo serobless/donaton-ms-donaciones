@@ -39,4 +39,7 @@ public class Donacion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "causa_id", nullable = false)
     private Causa causa;
+
+    @Column(name = "donador_id")
+    private String donadorId;
 }

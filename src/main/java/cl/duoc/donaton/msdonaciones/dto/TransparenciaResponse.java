@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class TransparenciaResponse {
     private Long id;
-    private String donanteAlias;
+    private String donadorNombre;
     private BigDecimal monto;
     private TipoDonacion tipoDonacion;
     private LocalDateTime fecha;

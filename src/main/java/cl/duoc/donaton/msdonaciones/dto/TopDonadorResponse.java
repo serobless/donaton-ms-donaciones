@@ -8,6 +8,6 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 public class TopDonadorResponse {
-    private String alias;
-    private BigDecimal totalMonto;
+    private String nombre;
+    private BigDecimal totalDonado;
 }

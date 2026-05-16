@@ -83,4 +83,12 @@ public class DonacionController {
     public ResponseEntity<Long> count() {
         return ResponseEntity.ok(donacionService.conteo());
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Eliminar donación por ID (admin)")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        donacionService.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

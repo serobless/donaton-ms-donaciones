@@ -42,4 +42,15 @@ public class Donacion {
 
     @Column(name = "donador_id")
     private String donadorId;
+
+    @Size(max = 500)
+    @Column(name = "descripcion", length = 500)
+    private String descripcion;
+
+    @Column(name = "cantidad")
+    private Integer cantidad;
+
+    @Size(max = 20)
+    @Column(name = "unidad", length = 20)
+    private String unidad;
 }

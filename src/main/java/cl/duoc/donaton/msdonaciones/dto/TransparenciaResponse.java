@@ -16,4 +16,5 @@ public class TransparenciaResponse {
     private TipoDonacion tipoDonacion;
     private LocalDateTime fecha;
     private String causaNombre;
+    private String descripcion;
 }

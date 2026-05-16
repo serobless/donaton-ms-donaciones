@@ -20,4 +20,12 @@ public class DonacionRequest {
 
     @Size(max = 100)
     private String donanteAlias;
+
+    @Size(max = 500)
+    private String descripcion;
+
+    private Integer cantidad;
+
+    @Size(max = 20)
+    private String unidad;
 }

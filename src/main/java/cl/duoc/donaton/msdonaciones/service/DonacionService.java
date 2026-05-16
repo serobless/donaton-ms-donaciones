@@ -40,6 +40,9 @@ public class DonacionService {
                 causa
         );
         donacion.setDonadorId(donadorId);
+        donacion.setDescripcion(req.getDescripcion());
+        donacion.setCantidad(req.getCantidad());
+        donacion.setUnidad(req.getUnidad());
 
         Donacion guardada = donacionRepository.save(donacion);
 
@@ -77,6 +80,14 @@ public class DonacionService {
         return donacionRepository.count();
     }
 
+    @Transactional
+    public void eliminar(Long id) {
+        if (!donacionRepository.existsById(id)) {
+            throw new jakarta.persistence.EntityNotFoundException("Donación no encontrada: " + id);
+        }
+        donacionRepository.deleteById(id);
+    }
+
     public List<TransparenciaResponse> transparencia() {
         return donacionRepository.findAll().stream()
                 .map(d -> TransparenciaResponse.builder()
@@ -86,6 +97,7 @@ public class DonacionService {
                         .tipoDonacion(d.getTipoDonacion())
                         .fecha(d.getFecha())
                         .causaNombre(d.getCausa().getNombre())
+                        .descripcion(d.getDescripcion())
                         .build()
                 )
                 .toList();

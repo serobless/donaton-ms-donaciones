@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/donaciones/mis-donaciones").authenticated()
                 // Endpoints protegidos (ADMIN)
                 .requestMatchers(HttpMethod.GET, "/api/donaciones").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/donaciones/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/causas").hasRole("ADMIN")
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()

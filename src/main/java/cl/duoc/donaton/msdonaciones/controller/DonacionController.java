@@ -1,5 +1,6 @@
 package cl.duoc.donaton.msdonaciones.controller;
 
+import cl.duoc.donaton.msdonaciones.dto.ActualizarEstadoRequest;
 import cl.duoc.donaton.msdonaciones.dto.DonacionRequest;
 import cl.duoc.donaton.msdonaciones.dto.TopDonadorResponse;
 import cl.duoc.donaton.msdonaciones.dto.TransparenciaResponse;
@@ -82,6 +83,14 @@ public class DonacionController {
     @Operation(summary = "Cantidad total de donaciones (público)")
     public ResponseEntity<Long> count() {
         return ResponseEntity.ok(donacionService.conteo());
+    }
+
+    @PatchMapping("/{id}/estado")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Actualizar estado de una donación")
+    public Donacion actualizarEstado(@PathVariable Long id,
+            @RequestBody ActualizarEstadoRequest req) {
+        return donacionService.actualizarEstado(id, req.getEstado());
     }
 
     @DeleteMapping("/{id}")

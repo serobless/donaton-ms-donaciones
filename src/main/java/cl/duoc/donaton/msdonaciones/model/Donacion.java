@@ -53,4 +53,9 @@ public class Donacion {
     @Size(max = 20)
     @Column(name = "unidad", length = 20)
     private String unidad;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false, length = 20)
+    private EstadoDonacion estado = EstadoDonacion.PENDIENTE;
 }

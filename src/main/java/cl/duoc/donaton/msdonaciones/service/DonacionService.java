@@ -6,6 +6,7 @@ import cl.duoc.donaton.msdonaciones.dto.TransparenciaResponse;
 import cl.duoc.donaton.msdonaciones.factory.DonacionFactory;
 import cl.duoc.donaton.msdonaciones.model.Causa;
 import cl.duoc.donaton.msdonaciones.model.Donacion;
+import cl.duoc.donaton.msdonaciones.model.EstadoDonacion;
 import cl.duoc.donaton.msdonaciones.model.TipoDonacion;
 import cl.duoc.donaton.msdonaciones.repository.DonacionRepository;
 import lombok.RequiredArgsConstructor;
@@ -78,6 +79,14 @@ public class DonacionService {
 
     public long conteo() {
         return donacionRepository.count();
+    }
+
+    @Transactional
+    public Donacion actualizarEstado(Long id, EstadoDonacion nuevoEstado) {
+        Donacion donacion = donacionRepository.findById(id)
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Donación no encontrada: " + id));
+        donacion.setEstado(nuevoEstado);
+        return donacionRepository.save(donacion);
     }
 
     @Transactional

@@ -52,4 +52,12 @@ public class Causa {
 
     @Column(name = "dias_restantes")
     private Integer diasRestantes;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean destacada = false;
+
+    @Size(max = 100)
+    @Column(length = 100)
+    private String urgencia;
 }

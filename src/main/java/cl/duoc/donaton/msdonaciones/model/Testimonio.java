@@ -20,7 +20,7 @@ public class Testimonio {
     @Column(nullable = false)
     private String titulo;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String contenido;
 
     private String autorId;

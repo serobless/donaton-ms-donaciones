@@ -32,7 +32,8 @@ public class TestimonioController {
     public Testimonio crear(
             @Valid @RequestBody TestimonioRequest req,
             @RequestHeader(value = "X-User-Id", required = false) String userId,
-            @RequestHeader(value = "X-User-Roles", required = false) String userRoles) {
-        return testimonioService.crear(req, userId, userId);
+            @RequestHeader(value = "X-User-Roles", required = false) String userRoles,
+            @RequestHeader(value = "X-User-Name", required = false) String userName) {
+        return testimonioService.crear(req, userId, userName);
     }
 }

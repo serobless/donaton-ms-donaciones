@@ -21,6 +21,14 @@ public class TestimonioService {
     }
 
     @Transactional
+    public void eliminar(Long id) {
+        if (!testimonioRepository.existsById(id)) {
+            throw new jakarta.persistence.EntityNotFoundException("Testimonio no encontrado: " + id);
+        }
+        testimonioRepository.deleteById(id);
+    }
+
+    @Transactional
     public Testimonio crear(TestimonioRequest req, String autorId, String autorNombre) {
         Testimonio testimonio = Testimonio.builder()
                 .titulo(req.getTitulo())

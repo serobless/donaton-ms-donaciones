@@ -5,9 +5,11 @@ import cl.duoc.donaton.msdonaciones.dto.TopDonadorResponse;
 import cl.duoc.donaton.msdonaciones.dto.TransparenciaResponse;
 import cl.duoc.donaton.msdonaciones.factory.DonacionFactory;
 import cl.duoc.donaton.msdonaciones.model.Causa;
+import cl.duoc.donaton.msdonaciones.model.CentroAcopio;
 import cl.duoc.donaton.msdonaciones.model.Donacion;
 import cl.duoc.donaton.msdonaciones.model.EstadoDonacion;
 import cl.duoc.donaton.msdonaciones.model.TipoDonacion;
+import cl.duoc.donaton.msdonaciones.repository.CentroAcopioRepository;
 import cl.duoc.donaton.msdonaciones.repository.DonacionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class DonacionService {
 
     private final DonacionRepository donacionRepository;
     private final CausaService causaService;
+    private final CentroAcopioRepository centroAcopioRepository;
 
     public List<Donacion> listarTodas() {
         return donacionRepository.findAll();
@@ -44,6 +47,15 @@ public class DonacionService {
         donacion.setDescripcion(req.getDescripcion());
         donacion.setCantidad(req.getCantidad());
         donacion.setUnidad(req.getUnidad());
+
+        if (req.getCentroAcopioId() != null) {
+            centroAcopioRepository.findById(req.getCentroAcopioId()).ifPresent(donacion::setCentroAcopio);
+            // Sumar ítems físicos a capacidadActual via UPDATE directo (evita merge sobre @ElementCollection lazy)
+            if (req.getTipoDonacion() != TipoDonacion.MONETARIA
+                    && req.getCantidad() != null && req.getCantidad() > 0) {
+                centroAcopioRepository.incrementarCapacidad(req.getCentroAcopioId(), req.getCantidad());
+            }
+        }
 
         Donacion guardada = donacionRepository.save(donacion);
 
@@ -105,7 +117,7 @@ public class DonacionService {
                         .monto(d.getMonto())
                         .tipoDonacion(d.getTipoDonacion())
                         .fecha(d.getFecha())
-                        .causaNombre(d.getCausa().getNombre())
+                        .causaNombre(d.getCausa().getTitulo())
                         .descripcion(d.getDescripcion())
                         .build()
                 )

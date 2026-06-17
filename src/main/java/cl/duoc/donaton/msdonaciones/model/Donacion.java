@@ -1,5 +1,6 @@
 package cl.duoc.donaton.msdonaciones.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -39,6 +40,11 @@ public class Donacion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "causa_id", nullable = false)
     private Causa causa;
+
+    @JsonIgnoreProperties({"queRecibe", "hibernateLazyInitializer", "handler"})
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "centro_acopio_id")
+    private CentroAcopio centroAcopio;
 
     @Column(name = "donador_id")
     private String donadorId;

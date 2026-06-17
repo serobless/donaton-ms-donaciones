@@ -12,6 +12,8 @@ public class DonacionRequest {
     @NotNull
     private Long causaId;
 
+    private Long centroAcopioId;
+
     @NotNull
     private TipoDonacion tipoDonacion;
 

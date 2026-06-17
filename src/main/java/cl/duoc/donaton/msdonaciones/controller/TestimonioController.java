@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,5 +36,18 @@ public class TestimonioController {
             @RequestHeader(value = "X-User-Roles", required = false) String userRoles,
             @RequestHeader(value = "X-User-Name", required = false) String userName) {
         return testimonioService.crear(req, userId, userName);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Eliminar testimonio (solo ADMIN)")
+    public ResponseEntity<Void> eliminar(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-User-Roles", required = false) String userRoles) {
+        if (userRoles == null || !userRoles.contains("ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        testimonioService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }

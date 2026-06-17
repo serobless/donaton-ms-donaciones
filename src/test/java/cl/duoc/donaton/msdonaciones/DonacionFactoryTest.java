@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DonacionFactoryTest {
 
     private final Causa causa = Causa.builder()
-            .id(1L).nombre("Test").meta(BigDecimal.valueOf(1000)).build();
+            .id(1L).titulo("Test").meta(BigDecimal.valueOf(1000)).build();
 
     @Test
     void creaMonetariaConMontoPositivo() {

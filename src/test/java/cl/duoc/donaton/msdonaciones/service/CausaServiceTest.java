@@ -29,7 +29,7 @@ class CausaServiceTest {
 
     private CausaRequest requestDummy() {
         CausaRequest req = new CausaRequest();
-        req.setNombre("Alimentando Esperanzas");
+        req.setTitulo("Alimentando Esperanzas");
         req.setDescripcion("Ayuda a familias vulnerables");
         req.setMeta(BigDecimal.valueOf(500000));
         req.setCategoria("ALIMENTACION");
@@ -48,7 +48,7 @@ class CausaServiceTest {
         Causa resultado = causaService.crear(req);
 
         assertNotNull(resultado);
-        assertEquals("Alimentando Esperanzas", resultado.getNombre());
+        assertEquals("Alimentando Esperanzas", resultado.getTitulo());
         assertEquals(BigDecimal.valueOf(500000), resultado.getMeta());
         verify(causaRepository).save(any(Causa.class));
     }
@@ -57,7 +57,7 @@ class CausaServiceTest {
     void testObtenerCausa_existente_retornaCausa() {
         Causa causa = Causa.builder()
                 .id(1L)
-                .nombre("Causa Existente")
+                .titulo("Causa Existente")
                 .meta(BigDecimal.valueOf(100000))
                 .build();
         when(causaRepository.findById(1L)).thenReturn(Optional.of(causa));
@@ -66,7 +66,7 @@ class CausaServiceTest {
 
         assertNotNull(resultado);
         assertEquals(1L, resultado.getId());
-        assertEquals("Causa Existente", resultado.getNombre());
+        assertEquals("Causa Existente", resultado.getTitulo());
     }
 
     @Test
@@ -79,8 +79,8 @@ class CausaServiceTest {
     @Test
     void testListarCausas_retornaLista() {
         List<Causa> causas = List.of(
-                Causa.builder().id(1L).nombre("Causa A").meta(BigDecimal.valueOf(1000)).build(),
-                Causa.builder().id(2L).nombre("Causa B").meta(BigDecimal.valueOf(2000)).build()
+                Causa.builder().id(1L).titulo("Causa A").meta(BigDecimal.valueOf(1000)).build(),
+                Causa.builder().id(2L).titulo("Causa B").meta(BigDecimal.valueOf(2000)).build()
         );
         when(causaRepository.findByActivaTrue()).thenReturn(causas);
 

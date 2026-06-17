@@ -36,7 +36,7 @@ class DonacionServiceTest {
     private Causa causaDummy() {
         return Causa.builder()
                 .id(1L)
-                .nombre("Causa Test")
+                .titulo("Causa Test")
                 .meta(BigDecimal.valueOf(1000))
                 .build();
     }

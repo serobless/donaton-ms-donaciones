@@ -41,4 +41,20 @@ public class CausaController {
     public ResponseEntity<Causa> crear(@Valid @RequestBody CausaRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(causaService.crear(request));
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Actualizar causa (admin)")
+    public ResponseEntity<Causa> actualizar(@PathVariable Long id, @Valid @RequestBody CausaRequest request) {
+        return ResponseEntity.ok(causaService.actualizar(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Eliminar causa (admin)")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        causaService.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

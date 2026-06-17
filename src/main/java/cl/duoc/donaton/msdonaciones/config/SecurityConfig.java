@@ -54,6 +54,17 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/donaciones").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/donaciones/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/causas").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/causas/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/causas/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/centros/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/centros").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/centros/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/centros/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/necesidades/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/centros/*/necesidades").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/centros/*/necesidades").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/necesidades/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/necesidades/**").hasRole("ADMIN")
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             );

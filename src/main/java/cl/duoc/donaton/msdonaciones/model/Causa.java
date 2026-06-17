@@ -22,8 +22,8 @@ public class Causa {
 
     @NotBlank
     @Size(max = 150)
-    @Column(nullable = false, length = 150)
-    private String nombre;
+    @Column(name = "nombre", nullable = false, length = 150)
+    private String titulo;
 
     @Size(max = 1000)
     @Column(length = 1000)

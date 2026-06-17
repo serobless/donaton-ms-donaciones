@@ -29,7 +29,7 @@ public class CausaService {
     @Transactional
     public Causa crear(CausaRequest req) {
         Causa causa = Causa.builder()
-                .nombre(req.getNombre())
+                .titulo(req.getTitulo())
                 .descripcion(req.getDescripcion())
                 .meta(req.getMeta())
                 .categoria(req.getCategoria())
@@ -37,6 +37,25 @@ public class CausaService {
                 .diasRestantes(req.getDiasRestantes())
                 .build();
         return causaRepository.save(causa);
+    }
+
+    @Transactional
+    public Causa actualizar(Long id, CausaRequest req) {
+        Causa c = obtenerPorId(id);
+        c.setTitulo(req.getTitulo());
+        c.setDescripcion(req.getDescripcion());
+        c.setMeta(req.getMeta());
+        c.setCategoria(req.getCategoria());
+        c.setImagenUrl(req.getImagenUrl());
+        c.setDiasRestantes(req.getDiasRestantes());
+        if (req.getDestacada() != null) c.setDestacada(req.getDestacada());
+        c.setUrgencia(req.getUrgencia());
+        return causaRepository.save(c);
+    }
+
+    @Transactional
+    public void eliminar(Long id) {
+        causaRepository.deleteById(id);
     }
 
     // Actualiza el recaudado tras cada donación monetaria

@@ -48,6 +48,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/donaciones/count").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/causas/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/testimonios").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/imagenes/uploads/**").permitAll()
                 // Endpoints protegidos (usuario autenticado)
                 .requestMatchers(HttpMethod.GET, "/api/donaciones/mis-donaciones").authenticated()
                 // Endpoints protegidos (ADMIN)

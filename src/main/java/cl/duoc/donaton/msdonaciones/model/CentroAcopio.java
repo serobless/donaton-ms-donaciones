@@ -28,4 +28,5 @@ public class CentroAcopio {
     @Builder.Default @Column(nullable = false) private Boolean activo = true;
     private Double latitud;
     private Double longitud;
+    @Column(length = 30) private String unidadCapacidad;
 }

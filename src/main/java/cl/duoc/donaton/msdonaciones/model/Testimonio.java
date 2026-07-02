@@ -32,4 +32,8 @@ public class Testimonio {
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
     private String imagenUrl;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean aprobado = false;
 }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
@@ -60,4 +61,6 @@ public class Causa {
     @Size(max = 100)
     @Column(length = 100)
     private String urgencia;
+
+    private LocalDate fechaInicio;
 }

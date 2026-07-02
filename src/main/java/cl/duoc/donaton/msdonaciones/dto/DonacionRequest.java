@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class DonacionRequest {
@@ -30,4 +31,14 @@ public class DonacionRequest {
 
     @Size(max = 20)
     private String unidad;
+
+    @Size(max = 250)
+    private String direccionDonante;
+
+    private Boolean esEmpresa;
+
+    @Size(max = 150)
+    private String nombreEmpresa;
+
+    private List<ItemDonacionRequest> items;
 }

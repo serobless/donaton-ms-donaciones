@@ -3,6 +3,7 @@ package cl.duoc.donaton.msdonaciones.service;
 import cl.duoc.donaton.msdonaciones.dto.TestimonioRequest;
 import cl.duoc.donaton.msdonaciones.model.Testimonio;
 import cl.duoc.donaton.msdonaciones.repository.TestimonioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,19 @@ public class TestimonioService {
     private final TestimonioRepository testimonioRepository;
 
     public List<Testimonio> listar() {
-        return testimonioRepository.findAll();
+        return testimonioRepository.findByAprobadoTrue();
+    }
+
+    public List<Testimonio> listarPendientes() {
+        return testimonioRepository.findByAprobadoFalse();
+    }
+
+    @Transactional
+    public Testimonio aprobar(Long id) {
+        Testimonio t = testimonioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Testimonio no encontrado: " + id));
+        t.setAprobado(true);
+        return testimonioRepository.save(t);
     }
 
     @Transactional

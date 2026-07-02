@@ -1,6 +1,7 @@
 package cl.duoc.donaton.msdonaciones.service;
 
 import cl.duoc.donaton.msdonaciones.dto.DonacionRequest;
+import cl.duoc.donaton.msdonaciones.dto.ItemDonacionRequest;
 import cl.duoc.donaton.msdonaciones.dto.TopDonadorResponse;
 import cl.duoc.donaton.msdonaciones.dto.TransparenciaResponse;
 import cl.duoc.donaton.msdonaciones.factory.DonacionFactory;
@@ -8,9 +9,11 @@ import cl.duoc.donaton.msdonaciones.model.Causa;
 import cl.duoc.donaton.msdonaciones.model.CentroAcopio;
 import cl.duoc.donaton.msdonaciones.model.Donacion;
 import cl.duoc.donaton.msdonaciones.model.EstadoDonacion;
+import cl.duoc.donaton.msdonaciones.model.ItemDonacion;
 import cl.duoc.donaton.msdonaciones.model.TipoDonacion;
 import cl.duoc.donaton.msdonaciones.repository.CentroAcopioRepository;
 import cl.duoc.donaton.msdonaciones.repository.DonacionRepository;
+import cl.duoc.donaton.msdonaciones.repository.ItemDonacionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,7 @@ import java.util.List;
 public class DonacionService {
 
     private final DonacionRepository donacionRepository;
+    private final ItemDonacionRepository itemDonacionRepository;
     private final CausaService causaService;
     private final CentroAcopioRepository centroAcopioRepository;
 
@@ -47,6 +51,9 @@ public class DonacionService {
         donacion.setDescripcion(req.getDescripcion());
         donacion.setCantidad(req.getCantidad());
         donacion.setUnidad(req.getUnidad());
+        donacion.setDireccionDonante(req.getDireccionDonante());
+        if (req.getEsEmpresa() != null) donacion.setEsEmpresa(req.getEsEmpresa());
+        donacion.setNombreEmpresa(req.getNombreEmpresa());
 
         if (req.getCentroAcopioId() != null) {
             centroAcopioRepository.findById(req.getCentroAcopioId()).ifPresent(donacion::setCentroAcopio);
@@ -58,6 +65,17 @@ public class DonacionService {
         }
 
         Donacion guardada = donacionRepository.save(donacion);
+
+        if (req.getItems() != null && !req.getItems().isEmpty()) {
+            for (ItemDonacionRequest itemReq : req.getItems()) {
+                itemDonacionRepository.save(ItemDonacion.builder()
+                        .donacion(guardada)
+                        .descripcion(itemReq.getDescripcion())
+                        .cantidad(itemReq.getCantidad())
+                        .unidad(itemReq.getUnidad())
+                        .build());
+            }
+        }
 
         // Solo las donaciones monetarias suman al recaudado
         if (req.getTipoDonacion() == TipoDonacion.MONETARIA && req.getMonto() != null) {

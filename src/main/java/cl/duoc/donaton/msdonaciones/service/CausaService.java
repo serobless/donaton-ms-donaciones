@@ -35,6 +35,7 @@ public class CausaService {
                 .categoria(req.getCategoria())
                 .imagenUrl(req.getImagenUrl())
                 .diasRestantes(req.getDiasRestantes())
+                .fechaInicio(req.getFechaInicio())
                 .build();
         return causaRepository.save(causa);
     }
@@ -50,6 +51,7 @@ public class CausaService {
         c.setDiasRestantes(req.getDiasRestantes());
         if (req.getDestacada() != null) c.setDestacada(req.getDestacada());
         c.setUrgencia(req.getUrgencia());
+        c.setFechaInicio(req.getFechaInicio());
         return causaRepository.save(c);
     }
 

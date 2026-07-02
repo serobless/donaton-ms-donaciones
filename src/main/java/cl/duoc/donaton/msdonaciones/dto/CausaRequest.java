@@ -3,6 +3,7 @@ package cl.duoc.donaton.msdonaciones.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 public class CausaRequest {
@@ -14,4 +15,5 @@ public class CausaRequest {
     private Integer diasRestantes;
     private Boolean destacada;
     @Size(max = 100) private String urgencia;
+    private LocalDate fechaInicio;
 }

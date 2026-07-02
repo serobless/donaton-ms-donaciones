@@ -36,6 +36,12 @@ class DonacionFactoryTest {
     }
 
     @Test
+    void especieConMontoNegativoLanzaExcepcion() {
+        assertThrows(IllegalArgumentException.class,
+                () -> DonacionFactory.crear(TipoDonacion.ROPA, BigDecimal.valueOf(-1000), "alias", causa));
+    }
+
+    @Test
     void creaAlimentoConValorEstimado() {
         Donacion d = DonacionFactory.crear(TipoDonacion.ALIMENTO, BigDecimal.valueOf(20000), "club", causa);
         assertEquals(TipoDonacion.ALIMENTO, d.getTipoDonacion());

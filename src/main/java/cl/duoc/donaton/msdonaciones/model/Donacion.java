@@ -64,4 +64,14 @@ public class Donacion {
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false, length = 20)
     private EstadoDonacion estado = EstadoDonacion.PENDIENTE;
+
+    @Column(length = 250)
+    private String direccionDonante;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean esEmpresa = false;
+
+    @Column(length = 150)
+    private String nombreEmpresa;
 }

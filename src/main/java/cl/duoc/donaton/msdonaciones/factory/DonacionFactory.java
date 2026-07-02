@@ -42,6 +42,8 @@ public class DonacionFactory {
     // Donaciones en especie: el monto representa valor estimado en CLP
     private static Donacion buildEspecie(TipoDonacion tipo, BigDecimal monto,
                                           String alias, Causa causa) {
+        if (monto != null && monto.compareTo(BigDecimal.ZERO) < 0)
+            throw new IllegalArgumentException("El monto no puede ser negativo");
         BigDecimal valorEspecie = (monto != null && monto.compareTo(BigDecimal.ZERO) > 0)
                 ? monto
                 : BigDecimal.ZERO;

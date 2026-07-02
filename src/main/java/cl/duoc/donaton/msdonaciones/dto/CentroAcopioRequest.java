@@ -18,4 +18,5 @@ public class CentroAcopioRequest {
     private Integer capacidadMax;
     private Double latitud;
     private Double longitud;
+    private String unidadCapacidad;
 }

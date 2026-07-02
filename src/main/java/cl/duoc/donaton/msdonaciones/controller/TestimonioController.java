@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,9 +23,23 @@ public class TestimonioController {
     private final TestimonioService testimonioService;
 
     @GetMapping
-    @Operation(summary = "Listar todos los testimonios (público)")
+    @Operation(summary = "Listar testimonios aprobados (público)")
     public List<Testimonio> listar() {
         return testimonioService.listar();
+    }
+
+    @GetMapping("/pendientes")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Listar testimonios pendientes de aprobación (ADMIN)")
+    public List<Testimonio> pendientes() {
+        return testimonioService.listarPendientes();
+    }
+
+    @PutMapping("/{id}/aprobar")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Aprobar testimonio (ADMIN)")
+    public Testimonio aprobar(@PathVariable Long id) {
+        return testimonioService.aprobar(id);
     }
 
     @PostMapping

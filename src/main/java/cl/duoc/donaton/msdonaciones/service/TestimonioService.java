@@ -1,0 +1,55 @@
+package cl.duoc.donaton.msdonaciones.service;
+
+import cl.duoc.donaton.msdonaciones.dto.TestimonioRequest;
+import cl.duoc.donaton.msdonaciones.model.Testimonio;
+import cl.duoc.donaton.msdonaciones.repository.TestimonioRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class TestimonioService {
+
+    private final TestimonioRepository testimonioRepository;
+
+    public List<Testimonio> listar() {
+        return testimonioRepository.findByAprobadoTrue();
+    }
+
+    public List<Testimonio> listarPendientes() {
+        return testimonioRepository.findByAprobadoFalse();
+    }
+
+    @Transactional
+    public Testimonio aprobar(Long id) {
+        Testimonio t = testimonioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Testimonio no encontrado: " + id));
+        t.setAprobado(true);
+        return testimonioRepository.save(t);
+    }
+
+    @Transactional
+    public void eliminar(Long id) {
+        if (!testimonioRepository.existsById(id)) {
+            throw new jakarta.persistence.EntityNotFoundException("Testimonio no encontrado: " + id);
+        }
+        testimonioRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Testimonio crear(TestimonioRequest req, String autorId, String autorNombre) {
+        Testimonio testimonio = Testimonio.builder()
+                .titulo(req.getTitulo())
+                .contenido(req.getContenido())
+                .imagenUrl(req.getImagenUrl())
+                .autorId(autorId)
+                .autorNombre(autorNombre)
+                .build();
+        return testimonioRepository.save(testimonio);
+    }
+}

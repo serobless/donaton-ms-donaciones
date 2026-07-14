@@ -17,6 +17,7 @@ public class TransparenciaResponse {
     private LocalDateTime fecha;
     private String causaNombre;
     private String descripcion;
+    private String estado;
     private Boolean esEmpresa;
     private String nombreEmpresa;
     private Boolean requiereAprobacion;

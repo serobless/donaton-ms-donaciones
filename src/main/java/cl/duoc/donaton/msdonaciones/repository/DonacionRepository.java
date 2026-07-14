@@ -31,4 +31,7 @@ public interface DonacionRepository extends JpaRepository<Donacion, Long> {
 
     @Query("SELECT COALESCE(SUM(d.monto), 0) FROM Donacion d")
     BigDecimal sumTotalMontos();
+
+    @Query("SELECT d FROM Donacion d JOIN FETCH d.causa ORDER BY d.fecha DESC")
+    List<Donacion> findAllWithCausa();
 }

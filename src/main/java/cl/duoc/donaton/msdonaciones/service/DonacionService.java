@@ -227,15 +227,16 @@ public class DonacionService {
     }
 
     public List<TransparenciaResponse> transparencia() {
-        return donacionRepository.findAll().stream()
+        return donacionRepository.findAllWithCausa().stream()
                 .map(d -> TransparenciaResponse.builder()
                         .id(d.getId())
                         .donadorNombre(d.getDonanteAlias() != null ? d.getDonanteAlias() : "Anónimo")
                         .monto(d.getMonto())
                         .tipoDonacion(d.getTipoDonacion())
                         .fecha(d.getFecha())
-                        .causaNombre(d.getCausa().getTitulo())
+                        .causaNombre(d.getCausa() != null ? d.getCausa().getTitulo() : "Sin causa")
                         .descripcion(d.getDescripcion())
+                        .estado(d.getEstado() != null ? d.getEstado().name().toLowerCase() : null)
                         .esEmpresa(Boolean.TRUE.equals(d.getEsEmpresa()))
                         .nombreEmpresa(d.getNombreEmpresa())
                         .requiereAprobacion(Boolean.TRUE.equals(d.getRequiereAprobacion()))

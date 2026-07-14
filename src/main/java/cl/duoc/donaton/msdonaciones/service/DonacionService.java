@@ -87,11 +87,6 @@ public class DonacionService {
 
         if (centroAsignado != null) {
             donacion.setCentroAcopio(centroAsignado);
-            if (req.getTipoDonacion() != TipoDonacion.MONETARIA
-                    && req.getCantidad() != null && req.getCantidad() > 0) {
-                validarCapacidadCentro(centroAsignado, req.getTipoDonacion(), req.getCantidad());
-                centroAcopioRepository.incrementarCapacidad(centroAsignado.getId(), req.getCantidad());
-            }
         }
 
         Donacion guardada = donacionRepository.save(donacion);

@@ -30,7 +30,7 @@ public class NecesidadController {
     }
 
     @PostMapping("/api/centros/{centroId}/necesidades")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CENTRO_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Necesidad> crear(@PathVariable Long centroId,
                                             @Valid @RequestBody NecesidadRequest req) {
@@ -38,14 +38,14 @@ public class NecesidadController {
     }
 
     @PutMapping("/api/necesidades/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CENTRO_ADMIN')")
     public ResponseEntity<Necesidad> actualizar(@PathVariable Long id,
                                                  @Valid @RequestBody NecesidadRequest req) {
         return ResponseEntity.ok(service.actualizar(id, req));
     }
 
     @DeleteMapping("/api/necesidades/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CENTRO_ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         service.eliminar(id);

@@ -40,7 +40,6 @@ public class SecurityConfig {
                 // Swagger / OpenAPI
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
                 // Endpoints públicos
-                .requestMatchers(HttpMethod.GET, "/api/donaciones/top-donadores").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/donaciones/top").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/donaciones/transparencia").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/donaciones/ultimas").permitAll()
@@ -51,6 +50,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/imagenes/uploads/**").permitAll()
                 // Endpoints protegidos (usuario autenticado)
                 .requestMatchers(HttpMethod.GET, "/api/donaciones/mis-donaciones").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/donaciones").authenticated()
+                .requestMatchers(HttpMethod.PATCH, "/api/donaciones/**").hasAnyRole("ADMIN", "CENTRO_ADMIN")
                 // Endpoints protegidos (ADMIN)
                 .requestMatchers(HttpMethod.GET, "/api/donaciones").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/donaciones/**").hasRole("ADMIN")
@@ -60,12 +61,14 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/centros/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/centros").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/centros/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/centros/**").hasAnyRole("ADMIN", "CENTRO_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/centros/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/donaciones/centro/**").hasAnyRole("ADMIN", "CENTRO_ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/necesidades/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/centros/*/necesidades").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/centros/*/necesidades").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/necesidades/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/necesidades/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/centros/*/necesidades").hasAnyRole("ADMIN", "CENTRO_ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/necesidades/**").hasAnyRole("ADMIN", "CENTRO_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/necesidades/**").hasAnyRole("ADMIN", "CENTRO_ADMIN")
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             );

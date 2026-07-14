@@ -23,9 +23,9 @@ public class CausaController {
     private final CausaService causaService;
 
     @GetMapping
-    @Operation(summary = "Listar causas activas (público)")
+    @Operation(summary = "Listar todas las causas (público)")
     public ResponseEntity<List<Causa>> listar() {
-        return ResponseEntity.ok(causaService.listarActivas());
+        return ResponseEntity.ok(causaService.listarTodas());
     }
 
     @GetMapping("/{id}")
@@ -47,6 +47,20 @@ public class CausaController {
     @Operation(summary = "Actualizar causa (admin)")
     public ResponseEntity<Causa> actualizar(@PathVariable Long id, @Valid @RequestBody CausaRequest request) {
         return ResponseEntity.ok(causaService.actualizar(id, request));
+    }
+
+    @PatchMapping("/{id}/destacar")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Marcar/desmarcar causa como urgente (admin)")
+    public ResponseEntity<Causa> destacar(@PathVariable Long id) {
+        return ResponseEntity.ok(causaService.toggleDestacada(id));
+    }
+
+    @PatchMapping("/{id}/toggle")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Activar/desactivar causa (admin)")
+    public ResponseEntity<Causa> toggle(@PathVariable Long id) {
+        return ResponseEntity.ok(causaService.toggleActiva(id));
     }
 
     @DeleteMapping("/{id}")

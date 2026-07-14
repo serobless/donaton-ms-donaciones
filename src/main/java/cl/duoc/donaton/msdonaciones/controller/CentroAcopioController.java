@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/centros")
@@ -42,6 +43,18 @@ public class CentroAcopioController {
     @Operation(summary = "Actualizar centro (admin)")
     public ResponseEntity<CentroAcopio> actualizar(@PathVariable Long id, @Valid @RequestBody CentroAcopioRequest req) {
         return ResponseEntity.ok(service.actualizar(id, req));
+    }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CENTRO_ADMIN')")
+    @Operation(summary = "Actualización parcial de capacidad (admin / encargado)")
+    public ResponseEntity<CentroAcopio> actualizarParcial(@PathVariable Long id,
+                                                           @RequestBody Map<String, Object> body) {
+        Integer capacidadActual = body.containsKey("capacidadActual")
+            ? ((Number) body.get("capacidadActual")).intValue() : null;
+        String unidadCapacidad = body.containsKey("unidadCapacidad")
+            ? (String) body.get("unidadCapacidad") : null;
+        return ResponseEntity.ok(service.actualizarCapacidad(id, capacidadActual, unidadCapacidad));
     }
 
     @DeleteMapping("/{id}")

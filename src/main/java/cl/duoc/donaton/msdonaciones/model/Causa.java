@@ -47,6 +47,10 @@ public class Causa {
     @Column(length = 80)
     private String categoria;
 
+    @Size(max = 50)
+    @Column(length = 50)
+    private String tipo;
+
     @Size(max = 500)
     @Column(name = "imagen_url", length = 500)
     private String imagenUrl;
@@ -63,4 +67,13 @@ public class Causa {
     private String urgencia;
 
     private LocalDate fechaInicio;
+
+    private LocalDate fechaFin;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "centro_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "queRecibe",
+            "latitud", "longitud", "horario", "telefono", "descripcion",
+            "imagenUrl", "unidadCapacidad", "activo", "capacidadMax", "capacidadActual"})
+    private CentroAcopio centro;
 }

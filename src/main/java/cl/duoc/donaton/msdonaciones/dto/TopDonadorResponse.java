@@ -10,4 +10,5 @@ import java.math.BigDecimal;
 public class TopDonadorResponse {
     private String nombre;
     private BigDecimal totalDonado;
+    private Long cantidadDonaciones;
 }

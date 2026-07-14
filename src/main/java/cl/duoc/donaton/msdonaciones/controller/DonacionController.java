@@ -47,10 +47,11 @@ public class DonacionController {
         return ResponseEntity.ok(donacionService.listarPorDonador(donadorId));
     }
 
-    @GetMapping("/top-donadores")
-    @Operation(summary = "Top 10 donantes por monto total (público)")
-    public ResponseEntity<List<TopDonadorResponse>> topDonadores() {
-        return ResponseEntity.ok(donacionService.topDonadores());
+    @GetMapping("/centro/{centroId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CENTRO_ADMIN')")
+    @Operation(summary = "Donaciones de un centro de acopio (admin / encargado)")
+    public ResponseEntity<List<Donacion>> porCentro(@PathVariable Long centroId) {
+        return ResponseEntity.ok(donacionService.listarPorCentro(centroId));
     }
 
     @GetMapping("/transparencia")
@@ -67,10 +68,10 @@ public class DonacionController {
     }
 
     @GetMapping("/top")
-    @Operation(summary = "Top donadores por monto (alias público para BFF)")
+    @Operation(summary = "Top donadores por monto (público)")
     public ResponseEntity<List<TopDonadorResponse>> top(
             @RequestParam(defaultValue = "10") int limit) {
-        return ResponseEntity.ok(donacionService.topDonadores());
+        return ResponseEntity.ok(donacionService.topDonadores(limit));
     }
 
     @GetMapping("/total")
@@ -91,6 +92,13 @@ public class DonacionController {
     public Donacion actualizarEstado(@PathVariable Long id,
             @RequestBody ActualizarEstadoRequest req) {
         return donacionService.actualizarEstado(id, req.getEstado());
+    }
+
+    @PatchMapping("/{id}/aprobar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CENTRO_ADMIN')")
+    @Operation(summary = "Aprobar donación empresarial de alto monto (admin / encargado)")
+    public ResponseEntity<Donacion> aprobar(@PathVariable Long id) {
+        return ResponseEntity.ok(donacionService.aprobar(id));
     }
 
     @DeleteMapping("/{id}")

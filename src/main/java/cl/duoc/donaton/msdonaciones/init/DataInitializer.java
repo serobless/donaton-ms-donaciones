@@ -4,11 +4,13 @@ import cl.duoc.donaton.msdonaciones.factory.DonacionFactory;
 import cl.duoc.donaton.msdonaciones.model.Causa;
 import cl.duoc.donaton.msdonaciones.model.CentroAcopio;
 import cl.duoc.donaton.msdonaciones.model.Donacion;
+import cl.duoc.donaton.msdonaciones.model.Necesidad;
 import cl.duoc.donaton.msdonaciones.model.Testimonio;
 import cl.duoc.donaton.msdonaciones.model.TipoDonacion;
 import cl.duoc.donaton.msdonaciones.repository.CausaRepository;
 import cl.duoc.donaton.msdonaciones.repository.CentroAcopioRepository;
 import cl.duoc.donaton.msdonaciones.repository.DonacionRepository;
+import cl.duoc.donaton.msdonaciones.repository.NecesidadRepository;
 import cl.duoc.donaton.msdonaciones.repository.TestimonioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,21 +31,59 @@ public class DataInitializer implements CommandLineRunner {
     private final CentroAcopioRepository centroAcopioRepository;
     private final DonacionRepository donacionRepository;
     private final TestimonioRepository testimonioRepository;
+    private final NecesidadRepository necesidadRepository;
 
     @Override
     public void run(String... args) {
+        // Cerrar causas vencidas o completadas al arrancar
+        int vencidas    = causaRepository.cerrarVencidas(LocalDate.now());
+        int completadas = causaRepository.cerrarCompletadas();
+        if (vencidas > 0 || completadas > 0)
+            log.info("DataInitializer: {} causa(s) vencida(s) y {} completada(s) cerrada(s) al arrancar.", vencidas, completadas);
+
         // Actualizar año en títulos de causas (2025 → 2026)
         int titulosFix = causaRepository.reemplazarEnTitulos("2025", "2026");
         if (titulosFix > 0) log.info("DataInitializer: {} título(s) de causa actualizados de 2025 a 2026.", titulosFix);
+
+        // Asignar fechaInicio/fechaFin a causas que no las tengan
+        causaRepository.asignarFechaInicio("Alimentación para familias vulnerables", LocalDate.of(2025, 3,  1));
+        causaRepository.asignarFechaInicio("Medicamentos para adultos mayores",      LocalDate.of(2025, 4, 15));
+        causaRepository.asignarFechaInicio("Abrigo para invierno 2026",              LocalDate.of(2025, 5,  1));
+        causaRepository.asignarFechaInicio("Causa abrigos para pinguinos",           LocalDate.of(2025, 6,  1));
+
+        causaRepository.asignarFechaFin("Alimentación para familias vulnerables", LocalDate.of(2025, 9, 30));
+        causaRepository.asignarFechaFin("Medicamentos para adultos mayores",      LocalDate.of(2025, 12, 31));
+        causaRepository.asignarFechaFin("Abrigo para invierno 2026",              LocalDate.of(2026, 8, 31));
+        causaRepository.asignarFechaFin("Causa abrigos para pinguinos",           LocalDate.of(2026, 12, 31));
 
         // --- Centros de acopio ---
         // Corregir coordenadas inválidas de Quilicura con UPDATE directo (evita cargar lazy queRecibe)
         int quilicuraFix = centroAcopioRepository.corregirCoordenadas("Centro Quilicura", -33.3558, -70.7380);
         if (quilicuraFix > 0) log.info("DataInitializer: Coordenadas de Centro Quilicura corregidas.");
 
+        // Corregir queRecibe de centros existentes que tengan datos incompletos
+        corregirQueRecibe("Centro Quilicura",          List.of("Ropa de abrigo", "Calzado", "Frazadas"), 3);
+        corregirQueRecibe("Centro Santiago Centro",    List.of("Ropa de abrigo", "Frazadas", "Calzado", "Alimentos no perecibles"), 4);
+        corregirQueRecibe("Centro Valparaíso",         List.of("Ropa de abrigo", "Frazadas", "Alimentos no perecibles"), 3);
+        corregirQueRecibe("Centro Concepción Biobío",  List.of("Ropa de abrigo", "Frazadas", "Alimentos no perecibles", "Medicamentos"), 4);
+
         java.util.Set<String> centrosExistentes = centroAcopioRepository.findAll()
                 .stream().map(CentroAcopio::getNombre).collect(java.util.stream.Collectors.toSet());
         java.util.List<CentroAcopio> centrosNuevos = new java.util.ArrayList<>();
+        // capacidadMax en dm³ (litros equivalentes de almacenamiento físico del centro)
+        // capacidadActual parte en 0: se actualiza automáticamente al cambiar estado de donaciones
+        if (!centrosExistentes.contains("Casa Central")) {
+            centrosNuevos.add(CentroAcopio.builder()
+                .nombre("Casa Central")
+                .direccion("Av. Apoquindo 4501, Las Condes")
+                .region("Metropolitana").ciudad("Santiago")
+                .horario("Lun-Vie 8:00-20:00, Sáb 9:00-14:00")
+                .telefono("+56 2 2700 0001")
+                .queRecibe(new java.util.ArrayList<>(List.of("Ropa de abrigo", "Calzado", "Frazadas", "Alimentos no perecibles", "Medicamentos")))
+                .capacidadActual(0).capacidadMax(2000)
+                .unidadCapacidad("dm³")
+                .latitud(-33.4172).longitud(-70.6056).build());
+        }
         if (!centrosExistentes.contains("Centro Santiago Centro")) {
             centrosNuevos.add(CentroAcopio.builder()
                 .nombre("Centro Santiago Centro")
@@ -51,7 +92,8 @@ public class DataInitializer implements CommandLineRunner {
                 .horario("Lun-Vie 9:00-18:00, Sáb 10:00-14:00")
                 .telefono("+56 2 2345 1001")
                 .queRecibe(new java.util.ArrayList<>(List.of("Ropa de abrigo", "Frazadas", "Calzado", "Alimentos no perecibles")))
-                .capacidadActual(340).capacidadMax(500)
+                .capacidadActual(0).capacidadMax(500)
+                .unidadCapacidad("dm³")
                 .latitud(-33.4489).longitud(-70.6693).build());
         }
         if (!centrosExistentes.contains("Centro Valparaíso")) {
@@ -62,7 +104,8 @@ public class DataInitializer implements CommandLineRunner {
                 .horario("Lun-Vie 9:00-18:00")
                 .telefono("+56 32 234 5006")
                 .queRecibe(new java.util.ArrayList<>(List.of("Ropa de abrigo", "Frazadas", "Alimentos no perecibles")))
-                .capacidadActual(150).capacidadMax(280)
+                .capacidadActual(0).capacidadMax(280)
+                .unidadCapacidad("dm³")
                 .latitud(-33.0472).longitud(-71.6127).build());
         }
         if (!centrosExistentes.contains("Centro Concepción Biobío")) {
@@ -73,8 +116,21 @@ public class DataInitializer implements CommandLineRunner {
                 .horario("Lun-Vie 8:30-17:30")
                 .telefono("+56 41 234 5008")
                 .queRecibe(new java.util.ArrayList<>(List.of("Ropa de abrigo", "Frazadas", "Alimentos no perecibles", "Medicamentos")))
-                .capacidadActual(310).capacidadMax(450)
+                .capacidadActual(0).capacidadMax(450)
+                .unidadCapacidad("dm³")
                 .latitud(-36.8201).longitud(-73.0444).build());
+        }
+        if (!centrosExistentes.contains("Centro Quilicura")) {
+            centrosNuevos.add(CentroAcopio.builder()
+                .nombre("Centro Quilicura")
+                .direccion("Av. Manuel Antonio Matta 456")
+                .region("Metropolitana").ciudad("Quilicura")
+                .horario("Lun-Vie 9:00-17:00")
+                .telefono("+56 2 2345 1004")
+                .queRecibe(new java.util.ArrayList<>(List.of("Ropa de abrigo", "Calzado", "Frazadas")))
+                .capacidadActual(0).capacidadMax(400)
+                .unidadCapacidad("dm³")
+                .latitud(-33.3558).longitud(-70.7380).build());
         }
         if (!centrosNuevos.isEmpty()) {
             centroAcopioRepository.saveAll(centrosNuevos);
@@ -140,6 +196,8 @@ public class DataInitializer implements CommandLineRunner {
                 .categoria("ALIMENTACION")
                 .imagenUrl("https://images.unsplash.com/photo-1593113630400-ea4288922559?w=800")
                 .diasRestantes(18)
+                .fechaInicio(LocalDate.of(2025, 3, 1))
+                .fechaFin(LocalDate.of(2025, 9, 30))
                 .build());
 
         Causa salud = causaRepository.save(Causa.builder()
@@ -151,6 +209,8 @@ public class DataInitializer implements CommandLineRunner {
                 .categoria("SALUD")
                 .imagenUrl("https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800")
                 .diasRestantes(45)
+                .fechaInicio(LocalDate.of(2025, 4, 15))
+                .fechaFin(LocalDate.of(2025, 12, 31))
                 .build());
 
         Causa ropa = causaRepository.save(Causa.builder()
@@ -162,6 +222,8 @@ public class DataInitializer implements CommandLineRunner {
                 .categoria("VESTIMENTA")
                 .imagenUrl("https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800")
                 .diasRestantes(7)
+                .fechaInicio(LocalDate.of(2025, 5, 1))
+                .fechaFin(LocalDate.of(2026, 8, 31))
                 .build());
 
         log.info("Causas creadas: {}, {}, {}", alimentacion.getTitulo(), salud.getTitulo(), ropa.getTitulo());
@@ -189,6 +251,35 @@ public class DataInitializer implements CommandLineRunner {
 
         donacionRepository.saveAll(donaciones);
         log.info("DataInitializer: {} donaciones de prueba cargadas.", donaciones.size());
+
+        // --- Necesidades por centro (solo si no existen) ---
+        if (necesidadRepository.count() == 0) {
+            centroAcopioRepository.findByNombre("Centro Quilicura").ifPresent(c -> necesidadRepository.saveAll(List.of(
+                Necesidad.builder().centro(c).tipo("Frazadas").descripcion("Frazadas para familias en situación de calle").metaUnidades(200).unidadesActuales(85).urgente(true).diasRestantes(7).build(),
+                Necesidad.builder().centro(c).tipo("Ropa").descripcion("Ropa de abrigo talla adulto y niño").metaUnidades(300).unidadesActuales(140).urgente(false).diasRestantes(21).build()
+            )));
+            centroAcopioRepository.findByNombre("Centro Santiago Centro").ifPresent(c -> necesidadRepository.saveAll(List.of(
+                Necesidad.builder().centro(c).tipo("Alimentos").descripcion("Cajas de alimentos no perecibles").metaUnidades(150).unidadesActuales(45).urgente(true).diasRestantes(5).build(),
+                Necesidad.builder().centro(c).tipo("Medicamentos").descripcion("Analgésicos, antifebriles y vendas").metaUnidades(100).unidadesActuales(60).urgente(false).build()
+            )));
+            centroAcopioRepository.findByNombre("Centro Valparaíso").ifPresent(c -> necesidadRepository.saveAll(List.of(
+                Necesidad.builder().centro(c).tipo("Frazadas").descripcion("Frazadas dobles para temporada de frío").metaUnidades(180).unidadesActuales(130).urgente(false).diasRestantes(14).build(),
+                Necesidad.builder().centro(c).tipo("Alimentos").descripcion("Leche, aceite, arroz y legumbres").metaUnidades(200).unidadesActuales(30).urgente(true).diasRestantes(3).build()
+            )));
+            centroAcopioRepository.findByNombre("Centro Concepción Biobío").ifPresent(c -> necesidadRepository.saveAll(List.of(
+                Necesidad.builder().centro(c).tipo("Ropa").descripcion("Ropa de abrigo para el clima del sur").metaUnidades(250).unidadesActuales(80).urgente(true).diasRestantes(10).build(),
+                Necesidad.builder().centro(c).tipo("Medicamentos").descripcion("Medicamentos básicos y material de curación").metaUnidades(120).unidadesActuales(20).urgente(true).diasRestantes(4).build()
+            )));
+            log.info("DataInitializer: necesidades de centros sembradas.");
+        }
+    }
+
+    private void corregirQueRecibe(String nombreCentro, List<String> itemsEsperados, int cantidadEsperada) {
+        if (centroAcopioRepository.countQueRecibeByNombre(nombreCentro) != cantidadEsperada) {
+            centroAcopioRepository.clearQueRecibeByNombre(nombreCentro);
+            itemsEsperados.forEach(item -> centroAcopioRepository.addQueRecibeByNombre(nombreCentro, item));
+            log.info("DataInitializer: queRecibe de '{}' corregido → {}.", nombreCentro, itemsEsperados);
+        }
     }
 
     private Donacion buildDonacion(TipoDonacion tipo, String monto, String alias,

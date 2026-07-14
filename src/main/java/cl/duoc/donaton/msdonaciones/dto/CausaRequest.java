@@ -11,9 +11,12 @@ public class CausaRequest {
     @Size(max = 1000) private String descripcion;
     @NotNull @DecimalMin("0.01") private BigDecimal meta;
     @Size(max = 80) private String categoria;
+    @Size(max = 50) private String tipo;
     @Size(max = 500) private String imagenUrl;
     private Integer diasRestantes;
     private Boolean destacada;
     @Size(max = 100) private String urgencia;
     private LocalDate fechaInicio;
+    private LocalDate fechaFin;
+    private Long centroId;
 }

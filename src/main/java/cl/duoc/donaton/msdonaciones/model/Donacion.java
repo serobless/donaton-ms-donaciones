@@ -74,4 +74,8 @@ public class Donacion {
 
     @Column(length = 150)
     private String nombreEmpresa;
+
+    @Builder.Default
+    @Column(name = "requiere_aprobacion", nullable = false)
+    private Boolean requiereAprobacion = false;
 }

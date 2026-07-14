@@ -10,18 +10,22 @@ import java.util.List;
 
 public interface DonacionRepository extends JpaRepository<Donacion, Long> {
 
-    // Top 10 donantes por monto total acumulado
+    // Top N donantes por monto total acumulado
     @Query("""
-        SELECT d.donanteAlias, SUM(d.monto) AS totalMonto
+        SELECT d.donanteAlias, SUM(d.monto) AS totalMonto, COUNT(d.id) AS cantidad
         FROM Donacion d
         WHERE d.donanteAlias IS NOT NULL
         GROUP BY d.donanteAlias
         ORDER BY totalMonto DESC
-        LIMIT 10
+        LIMIT :limit
         """)
-    List<Object[]> findTop10Donantes();
+    List<Object[]> findTopDonantes(@org.springframework.data.repository.query.Param("limit") int limit);
+
+    List<Donacion> findByCausaId(Long causaId);
 
     List<Donacion> findByDonadorId(String donadorId);
+
+    List<Donacion> findByCentroAcopioIdOrderByFechaDesc(Long centroId);
 
     List<Donacion> findAllByOrderByFechaDesc(Pageable pageable);
 

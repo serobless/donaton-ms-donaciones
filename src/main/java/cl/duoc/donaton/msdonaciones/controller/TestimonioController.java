@@ -55,13 +55,9 @@ public class TestimonioController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Eliminar testimonio (solo ADMIN)")
-    public ResponseEntity<Void> eliminar(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Roles", required = false) String userRoles) {
-        if (userRoles == null || !userRoles.contains("ADMIN")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         testimonioService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
